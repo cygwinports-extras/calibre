@@ -1,0 +1,76 @@
+--- origsrc/calibre/src/calibre/__init__.py	2011-03-18 13:22:30.000000000 -0500
++++ src/calibre/src/calibre/__init__.py	2011-08-18 16:46:35.795248100 -0500
+@@ -5,6 +5,7 @@ __docformat__ = 'restructuredtext en'
+ 
+ import uuid, sys, os, re, logging, time, random, \
+        __builtin__, warnings, multiprocessing
++from ctypes.util import find_library
+ from urllib import getproxies
+ __builtin__.__dict__['dynamic_property'] = lambda(func): func(None)
+ from htmlentitydefs import name2codepoint
+@@ -196,7 +197,7 @@ def load_library(name, cdll):
+         if hasattr(sys, 'frameworks_dir'):
+             return cdll.LoadLibrary(os.path.join(getattr(sys, 'frameworks_dir'), name))
+         return cdll.LoadLibrary(name)
+-    return cdll.LoadLibrary(name+'.so')
++    return cdll.LoadLibrary(find_library(name))
+ 
+ def filename_to_utf8(name):
+     '''Return C{name} encoded in utf8. Unhandled characters are replaced. '''
+--- origsrc/calibre/src/calibre/devices/bambook/libbambookcore.py	2011-03-18 13:22:30.000000000 -0500
++++ src/calibre/src/calibre/devices/bambook/libbambookcore.py	2011-08-18 16:48:02.958816400 -0500
+@@ -14,10 +14,7 @@ from calibre.constants import iswindows,
+ from calibre import load_library
+ 
+ try:
+-    _lib_name = 'libBambookCore'
+     cdll = ctypes.cdll
+-    if iswindows:
+-        _lib_name = 'BambookCore'
+     if hasattr(sys, 'frozen') and iswindows:
+         lp = os.path.join(os.path.dirname(sys.executable), 'DLLs', 'BambookCore.dll')
+         lib_handle = cdll.LoadLibrary(lp)
+@@ -25,7 +22,7 @@ try:
+         lp = os.path.join(sys.frozen_path, 'lib', 'libBambookCore.so')
+         lib_handle = cdll.LoadLibrary(lp)
+     else:
+-        lib_handle = load_library(_lib_name, cdll)
++        lib_handle = load_library('BambookCore', cdll)
+ except:
+     lib_handle = None
+ 
+--- origsrc/calibre/src/calibre/devices/libusb.py	2011-03-18 13:22:30.000000000 -0500
++++ src/calibre/src/calibre/devices/libusb.py	2011-08-18 16:50:29.219389200 -0500
+@@ -10,7 +10,7 @@ from errno import EBUSY, ENOMEM
+ 
+ from calibre import iswindows, isosx, isfreebsd, load_library
+ 
+-_libusb_name = 'libusb'
++_libusb_name = 'usb'
+ PATH_MAX = 511 if iswindows else 1024 if (isosx or isfreebsd) else 4096
+ if iswindows:
+     class Structure(_Structure):
+--- origsrc/calibre/src/calibre/libunrar.py	2011-03-18 13:22:30.000000000 -0500
++++ src/calibre/src/calibre/libunrar.py	2011-08-18 16:51:05.958554400 -0500
+@@ -15,12 +15,10 @@ from StringIO import StringIO
+ from calibre import iswindows, load_library, CurrentDir
+ from calibre.ptempfile import TemporaryDirectory, PersistentTemporaryFile
+ 
+-_librar_name = 'libunrar'
+ cdll = ctypes.cdll
+ if iswindows:
+     class Structure(_Structure):
+         _pack_ = 1
+-    _librar_name = 'unrar'
+     cdll = ctypes.windll
+ else:
+     Structure = _Structure
+@@ -31,7 +29,7 @@ elif hasattr(sys, 'frozen_path'):
+     lp = os.path.join(sys.frozen_path, 'lib', 'libunrar.so')
+     _libunrar = cdll.LoadLibrary(lp)
+ else:
+-    _libunrar = load_library(_librar_name, cdll)
++    _libunrar = load_library('unrar', cdll)
+ 
+ RAR_OM_LIST    = 0
+ RAR_OM_EXTRACT = 1

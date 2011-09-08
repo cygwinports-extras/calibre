@@ -1,0 +1,5 @@
+category: Graphics Text
+requires: libchm0 libfontconfig1 libgcc1 libicu48 libImageMagick1 libpng14 libpodofo0.8.4 libpoppler13 libQtCore4 libQtGui4 libstdc++6 python python-beautifulsoup python-cssutils python-dateutil python-dns python-lxml python-mechanize python-pil python-pyqt4
+sdesc: "E-book library manager"
+ldesc: "calibre is a free and open source e-book library management 
+application developed by users of e-books for users of e-books."

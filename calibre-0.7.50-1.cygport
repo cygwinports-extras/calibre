@@ -1,0 +1,22 @@
+inherit python
+
+HOMEPAGE="http://calibre-ebook.com/"
+SRC_URI="mirror://sourceforge/calibre/${P}.tar.gz"
+SRC_DIR=${PN}
+
+PATCH_URI="0.7.50-ctypes-util-find_library.patch
+           0.7.50-setup-dll.patch"
+
+DIFF_EXCLUDES="gui2 images.qrc"
+
+src_compile() {
+	lndirs
+	cd ${B}
+	${PYTHON} setup.py build
+}
+
+src_install() {
+	cd ${B}
+	${PYTHON} setup.py install --root=${D}/usr
+	python_optimize /usr/lib/${PN}
+}

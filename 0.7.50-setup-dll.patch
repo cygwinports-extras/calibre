@@ -1,0 +1,22 @@
+--- origsrc/calibre/setup/extensions.py	2011-03-18 13:22:30.000000000 -0500
++++ src/calibre/setup/extensions.py	2011-08-18 16:46:35.792247700 -0500
+@@ -298,7 +298,7 @@ class Build(Command):
+             self.build(ext, dest)
+ 
+     def dest(self, ext):
+-        ex = '.pyd' if iswindows else '.so'
++        ex = '.pyd' if iswindows else sysconfig.get_config_vars('SO')[0]
+         return os.path.join(SRC, 'calibre', 'plugins', ext.name)+ex
+ 
+     def inc_dirs_to_cflags(self, dirs):
+--- origsrc/calibre/setup/install.py	2011-03-18 13:22:30.000000000 -0500
++++ src/calibre/setup/install.py	2011-08-18 16:51:59.976913900 -0500
+@@ -269,7 +269,7 @@ class Install(Develop):
+             reldir = os.path.relpath(x[0], self.SRC)
+             destdir = os.path.join(dest, reldir)
+             for f in x[-1]:
+-                if os.path.splitext(f)[1] in ('.py', '.so'):
++                if os.path.splitext(f)[1] in ('.py', '.dll', '.so'):
+                     if not os.path.exists(destdir):
+                         os.makedirs(destdir)
+                     shutil.copy2(self.j(x[0], f), destdir)
